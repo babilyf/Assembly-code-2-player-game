@@ -1,0 +1,642 @@
+section	.data
+   question1 db "player 1: is 3 an even number? ", 10 ; Ask user the question.10 is to create new line
+   question1Len equ $- question1 ; calculate the length of the message in bytes
+   question2 db "player 2: is 4 an odd number? ", 10 
+   question2Len equ $- question2 
+   question3 db "player 1: is 12 an even number? ", 10 
+   question3Len equ $- question3 
+   question4 db "player 2: is 10 an odd number? ", 10 
+   question4Len equ $- question4 
+   question5 db "player 1: is 27 divisibale by 3? ", 10
+   question5Len equ $- question5
+   question6 db "player 2: is 46 divisibale by 4? ", 10
+   question6Len equ $- question6
+   question7 db "player 1: is 30 divisibale by 12? ", 10
+   question7Len equ $- question7
+   question8 db "player 2: is 21 a prime number? ", 10
+   question8Len equ $- question8
+   question9 db "player 1: is 23 a prime number? ", 10
+   question9Len equ $- question9
+   question10 db "player 2: is 12x12 = 142? ", 10
+   question10Len equ $- question10
+   sameMsg db "you are correct ", 10 ; Message that the guess and the right answer are same
+   sameMsgLen equ $- sameMsg 
+   msg db " is player 1's score ", 10 ;message to print score
+   msgLen equ $- msg
+   msg2 db " is player 2's score", 10
+   msg2Len equ $- msg2
+   exit dd 'e'
+   answer1 dd 'f' ; variable that stores the correct answer
+   answer2 dd 'f'
+   answer3 dd 't'
+   answer4 dd 'f'
+   answer5 dd 't'
+   answer6 dd 'f'
+   answer7 dd 'f'
+   answer8 dd 'f'
+   answer9 dd 't'
+   answer10 dd 'f'
+   notScored5Points1 db "Player 1 You didnt manage to answer all the previous 5 questions correctly :(", 10 ;message if not scored 5 questions in order.
+   notScored5Points1Len equ $- notScored5Points1 
+   notScored5Points2 db "Player 2 You didnt manage to answer all the previous 5 questions correctly :("
+   notScored5Points2Len equ $- notScored5Points2   
+   incValue dd 0, 10; the variable to be incremented
+   incValue2 dd 0, 10
+   scored5Points1 db "Congrats! Player 1 you've answered 5 questions in the correct order. ", 10 ;message if scored 5 questions in order
+   scored5Points1Len equ $- scored5Points1
+   scored5Points2 db "Congrats! Player 2 you've answered 5 questions in the correct order. ", 10
+   scored5Points2Len equ $- scored5Points2   
+
+   notSameMsg db "you are incorrect ", 10 ; Message that the guess and the right answer are not the same
+   notSameMsgLen equ $- notSameMsg
+
+segment .bss ;declare uninitialized variables
+   guess resd 1 ; variable to contain the letter entered by the user which is 4 bytes
+   getenter resd 1 ;variable to contain the input of when the enter key is pressed (4 bytes reserved)
+   printIncValue resb 10; variable to print the incremented value (10 bytes reserved)
+   printIncValue2 resb 10
+      
+section	.text 
+global _start      ;must be declared for using gcc
+_start:	 ;tell linker entry point  
+call printQuestion1   ;call the label to run each of the following subroutines
+call compareValue1 
+call printQuestion2
+call compareValue2
+call printQuestion3
+call compareValue3
+call printQuestion4
+call compareValue4
+call printIncValuee 
+call printIncValuee2
+call nextLevelplayer1
+call compareValue5
+call nextLevelplayer2
+call compareValue6
+call nextLevelplayer12
+call compareValue7
+call nextLevelplayer22
+call compareValue8
+call nextLevelplayer13
+call compareValue9
+call nextLevelplayer23
+call compareValue10
+call checkScore5p1
+call checkScore5p2
+call questionloop
+
+
+
+
+
+call end ; call subroutine to end the program
+
+; subroutines to print question get user input
+printQuestion1:
+   mov   edx, question1Len ; length of the question/guess request 
+   mov   ecx,question1 ; guess request message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the  kernel to display the message
+   ret ; return to the main section
+
+printQuestion2:
+   mov   edx, question2Len ; length of the question/guess request message
+   mov   ecx,question2 ; guess request message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the  kernel to display the message
+   ret ; return to the main section
+
+printQuestion3:
+   mov   edx, question3Len ; length of the question/guess request message
+   mov   ecx,question3 ; guess request message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the  kernel to display the message
+   ret ; return to the main section
+
+
+printQuestion4:
+   mov   edx, question4Len ; length of the question/guess request message
+   mov   ecx,question4 ; guess request message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the  kernel to display the message
+   ret ; return to the main section
+   
+   
+printQuestion5:
+   mov   edx, question5Len ; length of the question/guess request message
+   mov   ecx,question5 ; guess request message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the  kernel to display the message
+   ret ; return to the main section
+
+printQuestion6:
+   mov   edx, question6Len ; length of the question/guess request message
+   mov   ecx,question6 ; guess request message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the  kernel to display the message
+   ret ; return to the main section
+
+printQuestion7:
+   mov   edx, question7Len ; length of the question/guess request message
+   mov   ecx,question7 ; guess request message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the  kernel to display the message
+   ret ; return to the main section
+
+
+printQuestion8:
+   mov   edx, question8Len ; length of the question/guess request message
+   mov   ecx,question8 ; guess request message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the  kernel to display the message
+   ret ; return to the main section
+   
+   
+printQuestion9:
+   mov   edx, question9Len ; length of the question/guess request message
+   mov   ecx,question9 ; guess request message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the  kernel to display the message
+   ret ; return to the main section
+   
+   
+printQuestion10:
+   mov   edx, question10Len ; length of the question/guess request message 
+   mov   ecx,question10 ; guess request message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the  kernel to display the message
+   ret ; return to the main section
+   
+   
+;subroutine for scoring system for player 1   
+printIncValuee:
+    ; Print the incremented value
+    mov eax, 4 ; system call for write
+    mov ebx, 1 ; standard out
+    mov ecx, printIncValue ; address of the string to be printed stored in ecx
+    mov edx, 1 ; length of the string (1 for the value and 1 for the newline)
+    int 0x80 ; trigger the system call 
+    mov ecx, msg ;adress of msg stored in ecx register
+    mov edx, msgLen ;store msg length in edx register
+    mov ebx, 1 ;file descriptor (stdout)
+    mov eax, 4 ;system call number (sys_write)
+    int 0x80 ;invoke the  kernel to display the message
+    ret ; return to the main section
+    
+
+
+
+;subroutine for scoring system for player 2    
+printIncValuee2:
+; Print the incremented value
+  mov eax, 4 ; system call for write
+  mov ebx, 1 ; standard out
+  mov ecx,  printIncValue2; address of the string to be printed stored in ecx
+  mov edx, 1;length of the string (1 for the value and 1 for the newline)
+  int  0x80 ;trigger the system call 
+  mov ecx, msg2 ;adress of msg stored in ecx register
+  mov edx, msg2Len ;store msg2 length in edx register
+  mov ebx, 1 ;file descriptor (stdout)
+  mov eax, 4 ;system call number (sys_write)
+  int 0x80 ;invoke the  kernel to display the message
+  ret ; return to the main section
+  
+  
+
+    
+;subroutine to print message that player 1 didnt answer 5 questions in order    
+printNotScored5Points1:
+   mov   edx, notScored5Points1Len ; length of the guess request message
+   mov   ecx,notScored5Points1 ; guess request message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the  kernel to display the message
+   ret ; return to the main section
+   
+ 
+;subroutine to print message that player 2 didnt answer 5 questions in order 
+printNotScored5Points2:
+   mov   edx, notScored5Points2Len ; length of the guess request message
+   mov   ecx,notScored5Points2 ; guess request message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the  kernel to display the message
+   ret ; return to the main section  
+
+  
+  
+
+;subroutines to compare value inputed by players with correct answer and exit variables.
+compareValue1:
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, guess ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input   
+  
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, getenter    ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input 
+  
+mov   eax, [guess] ; move the value in guess variable into register eax
+  cmp   eax, [exit]  ; compare guess with variable exit
+  je    end ; if value in eax = exit jump to subroutine end
+  cmp eax,[answer1];compare answer1 with guess stored in eax
+  je same ;if same jump to subroutine same
+  call notSame ; go to notSame subroutine if guess and correct answer are not same
+ret ; return to main section
+
+
+
+
+compareValue2:
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, guess ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input   
+  
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, getenter ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input 
+  
+mov   eax, [guess] ; move the value in guess variable into register eax
+  cmp   eax, [exit]  ; compare correct answer with what in eax
+  je    end ; if value in eax = exit jump to subroutine end
+  cmp eax,[answer2];compare answer2 with guess stored in eax
+  je same2 ;if same jump to subroutine same2
+  call notSame2 ; go to notSame subroutine if guess and correct answer are not same
+ret ; return to main section
+
+  
+
+
+compareValue3:
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, guess ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input  
+   mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, getenter ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input 
+  
+mov   eax, [guess] ; move the value in guess variable into register eax
+  cmp   eax, [exit]  ; compare correct answer with what in eax
+  je    end ; if value in eax = exit jump to subroutine end
+  cmp eax,[answer3];compare answer3 with guess stored in eax
+  je same ;if same jump to subroutine same
+  call notSame ; go to notSame subroutine if guess and correct answer are not same
+ret ; return to main section
+
+
+
+
+compareValue4:
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, guess ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input   
+  
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, getenter ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input 
+
+mov   eax, [guess] ; move the value in guess variable into register eax
+  cmp   eax, [exit]  ; compare correct answer with what in eax
+  je    end ; if value in eax = exit jump to subroutine end
+  cmp eax,[answer4];compare answer4 with guess stored in eax
+  je same2 ;if same jump to subroutine same2
+  call notSame2 ; go to notSame subroutine if guess and correct answer are not same
+ret ; return to main section
+
+
+
+
+
+compareValue5:
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, guess ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input   
+  
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, getenter ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input 
+
+mov   eax, [guess] ; move the value in guess variable into register eax
+  cmp   eax, [exit]  ; compare correct answer with what in eax
+  je    end ; if value in eax = exit jump to subroutine end
+  cmp eax,[answer5];compare answer5 with guess stored in eax
+  je same ;if same jump to subroutine same
+  call notSame ; go to notSame subroutine if guess and correct answer are not same
+ret ; return to main section
+
+
+
+
+
+compareValue6:
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, guess ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input   
+  
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, getenter ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input 
+  
+mov   eax, [guess] ; move the value in guess variable into register eax
+  cmp   eax, [exit]  ; compare correct answer with what in eax
+  je    end ; if value in eax = exit jump to subroutine end
+  cmp eax,[answer6];compare answer6 with guess stored in eax
+  je same2 ;if same jump to subroutine same2
+  call notSame2 ; go to notSame subroutine if guess and correct answer are not same
+ret ; return to main section
+
+
+
+
+
+
+compareValue7:
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, guess ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input   
+  
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, getenter ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input 
+
+mov   eax, [guess] ; move the value in guess variable into register eax
+  cmp   eax, [exit]  ; compare correct answer with what in eax
+  je    end ; if value in eax = exit jump to subroutine end
+  cmp eax,[answer7];compare answer7 with guess stored in eax
+  je same ;if same jump to subroutine same
+  call notSame ; go to notSame subroutine if guess and correct answer are not same
+ret ; return to main section
+
+
+
+
+
+compareValue8:
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, guess ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input   
+  
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, getenter ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input 
+  
+mov   eax, [guess] ; move the value in guess variable into register eax
+  cmp   eax, [exit]  ; compare correct answer with what in eax
+  je    end ; if value in eax = exit jump to subroutine end
+  cmp eax,[answer8];compare answer8 with guess stored in eax
+  je same2 ;if same jump to subroutine same2
+  call notSame2 ; go to notSame subroutine if guess and correct answer are not same
+ret ; return to main section
+
+
+
+
+
+
+compareValue9:
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, guess ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input   
+  
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, getenter ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input 
+  
+mov   eax, [guess] ; move the value in guess variable into register eax
+  cmp   eax, [exit]  ; compare correct answer with what in eax
+  je    end ; if value in eax = exit jump to subroutine end
+  cmp eax,[answer9];compare answer9 with guess stored in eax
+  je same ;if same jump to subroutine same
+  call notSame ; go to notSame subroutine if guess and correct answer are not same
+ret ; return to main section
+
+
+
+
+
+compareValue10:
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, guess ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input   
+  
+  mov eax, 3 ; read from keyboard using system call SYS_READ
+  mov ebx, 2; stdin 
+  mov ecx, getenter ; Move the character entered by the user into variable guess
+  mov edx, 1 ;  As single letter move length in edx which is 1 byte
+  int 80h ; Invoke the kernel to get the user input 
+  
+mov   eax, [guess] ; move the value in guess variable into register eax
+  cmp   eax, [exit]  ; compare correct answer with what in eax
+  je    end ; if value in eax = exit jump to subroutine end
+  cmp eax,[answer10];compare answer10 with guess stored in eax
+  je same2 ;if same jump to subroutine same2
+  call notSame2 ; go to notSame subroutine if guess and correct answer are not same
+ret ; return to main section
+
+
+
+
+
+;subroutines to check if player can move on to a more difficult question.
+nextLevelplayer1:
+  mov   eax, [incValue] ; move the incValue of player 1(their score) to eax register
+  cmp   eax, 2  ; compare value 2 with score in eax
+  je   printQuestion5  ; if value in eax (player1 score) and value 2 are the same jump to printQuestion5
+  call printQuestion3 ; go to printQuestion3 if incValue and and value 2 are not same
+ret ; return to main section
+
+
+
+nextLevelplayer12:
+  mov   eax, [incValue] ; move the incValue of player 1(their score) to eax register
+  cmp   eax, 3 ; compare value 3 with score in eax
+  je   printQuestion7 ;if value in eax (player1 score) and value 3 are the same jump to printQuestion7 
+  call printQuestion1 ; go to printQuestion1 if incValue and and value 3 are not same
+ret ; return to main section
+
+nextLevelplayer13:
+  mov   eax, [incValue]; move the incValue of player 1(their score) to eax register
+  cmp   eax, 4 ; compare value 4 with score in eax
+  je   printQuestion9 ;if value in eax (player1 score) and value 4 are the same jump to printQuestion9
+  call printQuestion5 ; go to printQuestion5 if incValue and and value 4 are not same
+ret ; return to main section
+
+
+
+nextLevelplayer2:
+   mov   eax, [incValue2]; move the incValue2 of player 2(their score) to eax register
+  cmp   eax, 2 ; compare value 2 with score in eax
+  je   printQuestion6  ; if value in eax (player2 score) and value 2 are the same jump to printQuestion6
+  call printQuestion2 ; go to printQuestion2 if incValue2 and and value 2 are not same
+ret ; return to main section
+
+
+nextLevelplayer22:
+   mov   eax, [incValue2] ; move the incValue2 of player 2(their score) to eax register
+  cmp   eax, 3 ; compare value 3 with score in eax
+  je   printQuestion8; if value in eax (player2 score) and value 3 are the same jump to printQuestion8
+  call printQuestion4; go to printQuestion4 if incValue2 and and value 3 are not same
+ret ; return to main section
+
+
+
+nextLevelplayer23:
+   mov   eax, [incValue2] ; move the incValue2 of player 2(their score) to eax register
+  cmp   eax, 4  ; compare value 4 with score in eax
+  je   printQuestion10; if value in eax (player2 score) and value 4 are the same jump to printQuestion10
+  call printQuestion6; go to printQuestion6 if incValue2 and and value 3 are not same
+ret ; return to main section
+
+;subroutine to check if player 1 answered 5 questions correctly in order
+checkScore5p1:
+   mov   eax, [incValue] ; move the incValue of player 1(their score) to eax register
+  cmp   eax, 5  ; compare value 5 with score in eax
+  je   printScored5Points1 ; if value in eax (player1 score) and value 5 are the same jump to funcScored5Points1
+  call printNotScored5Points1;go to printNotScored5Points1 if incValue and and value 5 are not same
+ret ; return to main section
+
+;subroutine to check if player 2 answered 5 questions correctly in order
+checkScore5p2: 
+   mov   eax, [incValue2]; move the incValue2 of player 2(their score) to eax register
+  cmp   eax, 5 ; compare value 5 with score in eax
+  je   printScored5Points2;if value in eax (player2 score) and value 5 are the same jump to funcScored5Points2
+  call printNotScored5Points2;go to printNotScored5Points2 if incValue and and value 5 are not same
+ret ; return to main section
+
+;subroutine to print that player 1 answered 5 questions correctly in order
+printScored5Points1:
+  mov ecx, scored5Points1 ; message to print
+  mov edx, scored5Points1Len ;length of message
+  mov ebx, 1 ;file descriptor (stdout)
+  mov eax, 4 ;system call number (sys_write)
+  int 0x80 ;invoke the kernel to display the message
+  ret ; return to the main section
+  
+
+;subroutine to print that player 2 answered 5 questions correctly in order  
+printScored5Points2:
+  mov ecx, scored5Points2 ;message to print
+  mov edx, scored5Points2Len ;length of message
+  mov ebx, 1;file descriptor (stdout)
+  mov eax, 4;system call number (sys_write)
+  int 0x80;invoke the kernel to display the message
+  ret ; return to the main section
+  
+ 
+;subroutine to loop through through these questions. question is printed and guess is compared to correct answer
+questionloop:
+ call printQuestion2
+ call compareValue2
+ call printQuestion3
+ call compareValue3
+ call printQuestion4
+ call compareValue4
+ 
+ 
+
+
+
+; subroutine to deal with when player1 input and and real answer are the same
+same:
+   mov   edx, sameMsgLen ; length of the same message
+   mov   ecx,sameMsg ; same message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the  kernel to display the message
+   inc byte [incValue]
+   mov eax, [incValue]
+   add eax, 48
+   mov [printIncValue], eax
+   ret
+
+; subroutine to deal with when player2 input and and real answer are the same
+same2:
+   mov   edx, sameMsgLen ; length of the same message
+   mov   ecx,sameMsg ; same message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the  kernel to display the message
+   inc byte [incValue2]
+   mov eax, [incValue2]
+   add eax, 48
+   mov [printIncValue2], eax
+   ret
+   
+   
+; subroutine to deal with when player1 input and and real answer are not the same
+notSame: 
+   mov   edx, notSameMsgLen ; not same message length
+   mov   ecx,notSameMsg ; not same message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the kernel to print the message
+   ret 
+
+   
+; subroutine to deal with when player2 input and and real answer are not the same
+notSame2: 
+   mov   edx, notSameMsgLen ; not same message length
+   mov   ecx,notSameMsg ; not same message
+   mov   ebx,1	;file descriptor (stdout)
+   mov   eax,4	;system call number (sys_write)
+   int   0x80	;invoke the kernel to print the message
+   ret
+
+   
+
+
+
+
+;subroutine to end the program
+end:
+   mov eax, 1 ; system call number (sys_exit)
+   int 80h ; invoke the kernel to end the program
+
